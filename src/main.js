@@ -66,10 +66,8 @@ function startViewer() {
   const floorGrid = new THREE.GridHelper(64, 32, '#c5c5ba', '#dcdbd3');
   floorGrid.rotation.x = Math.PI / 2;
   floorGrid.position.set(13, 7, -0.3);
-  for (const material of floorGrid.material) {
-    material.transparent = true;
-    material.opacity = 0.25;
-  }
+  floorGrid.material.transparent = true;
+  floorGrid.material.opacity = 0.25;
   scene.add(floorGrid);
 
   const modelTimeout = setTimeout(() => {
