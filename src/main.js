@@ -24,7 +24,7 @@ const roomDefinitions = [
   { name: 'Chambre 01', floor: 'Floor | Bedroom north' },
   { name: 'Salle cinéma', floor: 'Floor | Cinema' },
   { name: 'Escalier', floor: 'Floor | Stair hall', compact: true },
-  { name: 'Hall', anchor: [13, 0.15, -8.6] },
+  { name: 'Hall', anchor: [11, 0.15, -9] },
   { name: 'Salle de bain 01', floor: 'Floor | Bathroom A', compact: true },
   { name: 'Salle de bain 02', floor: 'Floor | Bathroom B', compact: true },
   { name: 'Chambre 02', floor: 'Floor | Bedroom central' },
@@ -108,6 +108,7 @@ function startViewer() {
   let walkYaw = 0;
   let walkPitch = 0;
   let collisionMeshes = [];
+  const modelNodesBySourceName = new Map();
   const heldKeys = new Set();
   const heldTouch = new Set();
   const walkClock = new THREE.Clock();
@@ -143,7 +144,9 @@ function startViewer() {
       error.hidden = true;
       scene.add(modelScene);
       modelScene.traverse((object) => {
-        if (object.isMesh && !object.name.startsWith('Floor |') && object.name !== 'Continuous villa foundation') collisionMeshes.push(object);
+        const sourceName = object.userData.name || object.name;
+        if (sourceName) modelNodesBySourceName.set(sourceName, object);
+        if (object.isMesh && !sourceName.startsWith('Floor |') && sourceName !== 'Continuous villa foundation') collisionMeshes.push(object);
       });
       createRoomNavigation(modelScene);
       controls.update();
@@ -182,7 +185,7 @@ function startViewer() {
     labelLayer.replaceChildren();
 
     rooms = roomDefinitions.flatMap((definition, index) => {
-      const floor = definition.floor ? modelScene.getObjectByName(definition.floor) : null;
+      const floor = definition.floor ? modelNodesBySourceName.get(definition.floor) : null;
       if (definition.floor && !floor) {
         console.warn(`Room floor missing from the model: ${definition.floor}`);
         return [];
@@ -347,7 +350,7 @@ function startViewer() {
     activeCamera = walkCamera;
     controls.enabled = false;
     renderer.domElement.style.touchAction = 'none';
-    walkYaw = 0;
+    walkYaw = -Math.PI / 2;
     walkPitch = 0;
     placeWalker(selectedRoom?.anchor || rooms[6].anchor);
     walkHud.hidden = false;
@@ -437,7 +440,7 @@ function startViewer() {
     const forward = Number(heldKeys.has('KeyW') || heldKeys.has('ArrowUp') || heldTouch.has('forward')) - Number(heldKeys.has('KeyS') || heldKeys.has('ArrowDown') || heldTouch.has('backward'));
     const side = Number(heldKeys.has('KeyD') || heldKeys.has('ArrowRight') || heldTouch.has('right')) - Number(heldKeys.has('KeyA') || heldKeys.has('ArrowLeft') || heldTouch.has('left'));
     if (!forward && !side) return;
-    const speed = (heldKeys.has('ShiftLeft') || heldKeys.has('ShiftRight') ? 5.2 : 2.8) * Math.min(delta, 0.05) / Math.hypot(forward, side);
+    const speed = (heldKeys.has('ShiftLeft') || heldKeys.has('ShiftRight') ? 5.2 : 2.8) * Math.min(delta, 0.15) / Math.hypot(forward, side);
     walkDirection.set(Math.sin(walkYaw) * -forward + Math.cos(walkYaw) * side, 0, Math.cos(walkYaw) * -forward - Math.sin(walkYaw) * side).multiplyScalar(speed);
     for (const axis of ['x', 'z']) {
       const distance = walkDirection[axis];
