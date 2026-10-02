@@ -42,7 +42,18 @@
           <div class="explore-toolbar" role="group" aria-label="Explore controls">
             <button class="chosen" id="orbit-mode" type="button" aria-pressed="true">Orbit</button>
             <button id="pan-mode" type="button" aria-pressed="false">Move</button>
+            <button id="walk-mode" type="button" aria-pressed="false">Walk inside</button>
             <button class="chosen" id="labels-toggle" type="button" aria-pressed="true">Labels</button>
+          </div>
+          <div class="walk-hud" id="walk-hud" hidden>
+            <div class="walk-message">W A S D TO WALK <span>·</span> DRAG OR MOVE MOUSE TO LOOK <span>·</span> SHIFT TO MOVE FASTER</div>
+            <button class="walk-exit" id="walk-exit" type="button">Exit walk</button>
+            <div class="walk-pad" aria-label="Touch walking controls">
+              <button type="button" data-walk="forward" aria-label="Walk forward">↑</button>
+              <button type="button" data-walk="left" aria-label="Walk left">←</button>
+              <button type="button" data-walk="backward" aria-label="Walk backward">↓</button>
+              <button type="button" data-walk="right" aria-label="Walk right">→</button>
+            </div>
           </div>
           <div class="controls views" role="group" aria-label="Views">
             <button class="chosen" id="axon" type="button" aria-label="Axonometric view" title="Axonometric view">◩</button>
@@ -59,7 +70,7 @@
           <div class="serial"><span>PROJECT / 001</span><span>FLOOR 00</span></div>
           <p class="eyebrow small">THE EVERYDAY, IN PLAN</p>
           <h2>Find your way<br>around.</h2>
-          <p class="desc">Choose a room to bring it into focus. Switch between 3D and plan view, then drag to explore.</p>
+          <p class="desc">Choose a room to bring it into focus. Use Walk inside for an eye-level tour of the building.</p>
           <div class="room-selected" id="room-selected" aria-live="polite">CHOOSE A ROOM TO EXPLORE</div>
           <div class="rooms"><p class="eyebrow small">ROOMS / TAP TO FOCUS</p><div class="room-list" id="room-list"><span class="room-loading">Loading rooms…</span></div></div>
           <a class="download" href="/villa.glb" download="villa-plan.glb"><span>DOWNLOAD 3D MODEL</span><b>↓</b></a>

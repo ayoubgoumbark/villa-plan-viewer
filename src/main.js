@@ -12,6 +12,8 @@ const labelLayer = document.querySelector('#room-labels');
 const roomList = document.querySelector('#room-list');
 const selectedRoomText = document.querySelector('#room-selected');
 const navHint = document.querySelector('#nav-hint');
+const walkHud = document.querySelector('#walk-hud');
+const walkButton = document.querySelector('#walk-mode');
 
 const roomDefinitions = [
   { name: 'Salon', floor: 'Floor | Salon' },
@@ -59,6 +61,8 @@ function startViewer() {
   const blenderFrameWidth = 37;
   const blenderAspect = 1700 / 1500;
   const camera = new THREE.OrthographicCamera(-blenderFrameWidth / 2, blenderFrameWidth / 2, blenderFrameWidth / 2, -blenderFrameWidth / 2, 0.1, 300);
+  const walkCamera = new THREE.PerspectiveCamera(72, 1, 0.08, 180);
+  let activeCamera = camera;
   camera.up.set(0, 1, 0);
   camera.position.set(37, 67, 41);
 
@@ -89,6 +93,17 @@ function startViewer() {
   let cameraTween = null;
   let labelsVisible = true;
   let navigationMode = 'orbit';
+  let walking = false;
+  let walkYaw = 0;
+  let walkPitch = 0;
+  let collisionMeshes = [];
+  const heldKeys = new Set();
+  const heldTouch = new Set();
+  const walkClock = new THREE.Clock();
+  const raycaster = new THREE.Raycaster();
+  const eyeHeight = 1.65;
+  const walkDirection = new THREE.Vector3();
+  let touchLook = null;
   controls.addEventListener('start', () => { cameraTween = null; });
 
   const ground = new THREE.Mesh(
@@ -116,6 +131,9 @@ function startViewer() {
       fallback.hidden = true;
       error.hidden = true;
       scene.add(modelScene);
+      modelScene.traverse((object) => {
+        if (object.isMesh && !object.name.startsWith('Floor |') && object.name !== 'Continuous villa foundation') collisionMeshes.push(object);
+      });
       createRoomNavigation(modelScene);
       controls.update();
       loading.classList.add('done');
@@ -142,6 +160,8 @@ function startViewer() {
     camera.top = frameHeight / 2;
     camera.bottom = -frameHeight / 2;
     camera.updateProjectionMatrix();
+    walkCamera.aspect = aspect;
+    walkCamera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(stage);
   resize();
@@ -230,6 +250,11 @@ function startViewer() {
       highlightedMaterial = { floor: room.floor, original, clones };
     }
 
+    if (walking) {
+      placeWalker(room.anchor);
+      return;
+    }
+
     const toTarget = room.anchor.clone();
     toTarget.y = 0.35;
     const offset = toTarget.clone().sub(controls.target);
@@ -245,7 +270,7 @@ function startViewer() {
   }
 
   function updateLabels() {
-    if (!labelsVisible || !rooms.length) return;
+    if (walking || !labelsVisible || !rooms.length) return;
     const width = stage.clientWidth;
     const height = stage.clientHeight;
     const candidates = rooms.map((room) => {
@@ -270,6 +295,7 @@ function startViewer() {
   }
 
   function setNavigationMode(mode) {
+    if (walking) exitWalk();
     navigationMode = mode;
     controls.mouseButtons.LEFT = mode === 'orbit' ? THREE.MOUSE.ROTATE : THREE.MOUSE.PAN;
     controls.mouseButtons.RIGHT = mode === 'orbit' ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
@@ -287,13 +313,127 @@ function startViewer() {
 
   document.querySelector('#orbit-mode').onclick = () => setNavigationMode('orbit');
   document.querySelector('#pan-mode').onclick = () => setNavigationMode('pan');
+  walkButton.onclick = enterWalk;
+  document.querySelector('#walk-exit').onclick = exitWalk;
   document.querySelector('#labels-toggle').onclick = (event) => {
     labelsVisible = !labelsVisible;
-    labelLayer.hidden = !labelsVisible;
+    labelLayer.hidden = walking || !labelsVisible;
     event.currentTarget.classList.toggle('chosen', labelsVisible);
     event.currentTarget.setAttribute('aria-pressed', String(labelsVisible));
   };
   setNavigationMode(navigationMode);
+
+  function placeWalker(anchor) {
+    walkCamera.position.set(anchor.x, eyeHeight, anchor.z);
+    walkCamera.rotation.set(walkPitch, walkYaw, 0, 'YXZ');
+  }
+
+  function enterWalk() {
+    if (!rooms.length) return;
+    cameraTween = null;
+    walking = true;
+    stage.classList.add('is-walking');
+    activeCamera = walkCamera;
+    controls.enabled = false;
+    walkYaw = 0;
+    walkPitch = 0;
+    placeWalker(selectedRoom?.anchor || rooms.find((room) => room.name === 'Hall').anchor);
+    walkHud.hidden = false;
+    labelLayer.hidden = true;
+    navHint.hidden = true;
+    walkButton.classList.add('chosen');
+    walkButton.setAttribute('aria-pressed', 'true');
+    document.querySelector('#view-caption').textContent = 'WALK-THROUGH VIEW';
+    walkClock.getDelta();
+  }
+
+  function exitWalk() {
+    if (!walking) return;
+    walking = false;
+    stage.classList.remove('is-walking');
+    activeCamera = camera;
+    controls.enabled = true;
+    heldKeys.clear();
+    heldTouch.clear();
+    touchLook = null;
+    if (document.pointerLockElement === canvas) document.exitPointerLock();
+    walkHud.hidden = true;
+    labelLayer.hidden = walking || !labelsVisible;
+    navHint.hidden = false;
+    walkButton.classList.remove('chosen');
+    walkButton.setAttribute('aria-pressed', 'false');
+    document.querySelector('#view-caption').textContent = document.querySelector('#plan').classList.contains('chosen') ? 'PLAN VIEW' : 'AXONOMETRIC VIEW';
+  }
+
+  function lookBy(dx, dy) {
+    walkYaw -= dx * 0.0028;
+    walkPitch = THREE.MathUtils.clamp(walkPitch - dy * 0.0028, -Math.PI * 0.45, Math.PI * 0.45);
+    walkCamera.rotation.set(walkPitch, walkYaw, 0, 'YXZ');
+  }
+
+  canvas.addEventListener('click', () => {
+    if (walking && matchMedia('(pointer: fine)').matches && !document.pointerLockElement) canvas.requestPointerLock?.();
+  });
+  document.addEventListener('mousemove', (event) => {
+    if (walking && document.pointerLockElement === canvas) lookBy(event.movementX, event.movementY);
+  });
+  canvas.addEventListener('pointerdown', (event) => {
+    if (walking && document.pointerLockElement !== canvas) {
+      touchLook = { id: event.pointerId, x: event.clientX, y: event.clientY };
+      canvas.setPointerCapture(event.pointerId);
+    }
+  });
+  canvas.addEventListener('pointermove', (event) => {
+    if (!walking || touchLook?.id !== event.pointerId) return;
+    lookBy(event.clientX - touchLook.x, event.clientY - touchLook.y);
+    touchLook.x = event.clientX;
+    touchLook.y = event.clientY;
+  });
+  canvas.addEventListener('pointerup', (event) => { if (touchLook?.id === event.pointerId) touchLook = null; });
+  canvas.addEventListener('pointercancel', (event) => { if (touchLook?.id === event.pointerId) touchLook = null; });
+  document.addEventListener('keydown', (event) => {
+    if (!walking) return;
+    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'].includes(event.code)) {
+      heldKeys.add(event.code);
+      event.preventDefault();
+    }
+    if (event.code === 'Escape' && document.pointerLockElement !== canvas) exitWalk();
+  });
+  document.addEventListener('keyup', (event) => heldKeys.delete(event.code));
+  window.addEventListener('blur', () => { heldKeys.clear(); heldTouch.clear(); });
+  document.querySelectorAll('[data-walk]').forEach((button) => {
+    const direction = button.dataset.walk;
+    button.addEventListener('pointerdown', (event) => {
+      if (!walking) return;
+      event.preventDefault();
+      button.setPointerCapture(event.pointerId);
+      heldTouch.add(direction);
+    });
+    const release = () => heldTouch.delete(direction);
+    button.addEventListener('pointerup', release);
+    button.addEventListener('pointercancel', release);
+    button.addEventListener('lostpointercapture', release);
+  });
+
+  function updateWalk(delta) {
+    const forward = Number(heldKeys.has('KeyW') || heldKeys.has('ArrowUp') || heldTouch.has('forward')) - Number(heldKeys.has('KeyS') || heldKeys.has('ArrowDown') || heldTouch.has('backward'));
+    const side = Number(heldKeys.has('KeyD') || heldKeys.has('ArrowRight') || heldTouch.has('right')) - Number(heldKeys.has('KeyA') || heldKeys.has('ArrowLeft') || heldTouch.has('left'));
+    if (!forward && !side) return;
+    const speed = (heldKeys.has('ShiftLeft') || heldKeys.has('ShiftRight') ? 5.2 : 2.8) * Math.min(delta, 0.05) / Math.hypot(forward, side);
+    walkDirection.set(Math.sin(walkYaw) * -forward + Math.cos(walkYaw) * side, 0, Math.cos(walkYaw) * -forward - Math.sin(walkYaw) * side).multiplyScalar(speed);
+    for (const axis of ['x', 'z']) {
+      const distance = walkDirection[axis];
+      if (!distance) continue;
+      const direction = new THREE.Vector3(axis === 'x' ? Math.sign(distance) : 0, 0, axis === 'z' ? Math.sign(distance) : 0);
+      let blocked = false;
+      for (const height of [0.65, 1.55]) {
+        raycaster.set(new THREE.Vector3(walkCamera.position.x, height, walkCamera.position.z), direction);
+        raycaster.far = Math.abs(distance) + 0.27;
+        if (raycaster.intersectObjects(collisionMeshes, false).length) { blocked = true; break; }
+      }
+      if (!blocked) walkCamera.position[axis] += distance;
+    }
+  }
 
   const buttons = [...document.querySelectorAll('.views button')];
   const setActive = (button) => buttons.forEach((item) => item.classList.toggle('chosen', item === button));
@@ -343,6 +483,8 @@ function startViewer() {
 
   function animate() {
     requestAnimationFrame(animate);
+    const delta = walkClock.getDelta();
+    if (walking) updateWalk(delta);
     if (cameraTween) {
       const progress = Math.min(1, (performance.now() - cameraTween.started) / 650);
       const eased = 1 - (1 - progress) ** 3;
@@ -352,9 +494,9 @@ function startViewer() {
       camera.updateProjectionMatrix();
       if (progress === 1) cameraTween = null;
     }
-    controls.update();
+    if (!walking) controls.update();
     updateLabels();
-    renderer.render(scene, camera);
+    renderer.render(scene, activeCamera);
   }
   animate();
 }
