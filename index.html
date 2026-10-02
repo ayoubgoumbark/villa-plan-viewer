@@ -1,16 +1,79 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#33045d">
-  <meta name="description" content="Explore an interactive open-top 3D villa plan presented by QUÁLITY SIGN."><meta property="og:title" content="QUÁLITY SIGN — Villa 01"><meta property="og:description" content="Explore the 3D villa plan by QUÁLITY SIGN."><meta property="og:image" content="/cover.jpg">
-  <link rel="icon" type="image/jpeg" href="/quality-sign-logo.jpg"><title>QUÁLITY SIGN — Villa 01</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#33045d">
+  <meta name="description" content="Explore an interactive open-top 3D villa plan presented by QUÁLITY SIGN.">
+  <meta property="og:title" content="QUÁLITY SIGN — Villa 01">
+  <meta property="og:description" content="Explore the 3D villa plan by QUÁLITY SIGN.">
+  <meta property="og:image" content="/cover.jpg">
+  <link rel="icon" type="image/jpeg" href="/quality-sign-logo.jpg">
+  <title>QUÁLITY SIGN — Villa 01</title>
 </head>
-<body><div class="shell">
-  <header class="bar"><a class="brand" href="#" aria-label="QUÁLITY SIGN home"><img class="brand-logo" src="/quality-sign-logo.jpg" alt="QUÁLITY SIGN logo"><span class="brand-copy"><strong>QUÁLITY SIGN</strong><small>INTERIOR &amp; EXTERIOR DESIGN</small></span></a><span class="edition"><b></b> CONCEPT MODEL <i>/</i> OCT 2026</span><span class="made">AMÉNAGEMENT &amp; DÉCOR ↗</span></header>
-  <main><section class="hero"><div><p class="eyebrow">— &nbsp; RESIDENTIAL / 001</p><h1>A home,<br><em>opened up.</em></h1></div><p class="hero-note">One floor. A little more room<br>to see how it all fits together.</p></section>
-    <section class="card" aria-label="Interactive villa floor plan"><div class="stage" id="stage"><div class="stamp"><b></b><span id="view-caption">AXONOMETRIC VIEW</span></div><div class="north">N<br><i>↑</i></div><img class="scene-fallback" id="scene-fallback" src="/cover.jpg" alt="Rendered 3D preview of the open-top villa floor plan" hidden><canvas id="scene" aria-label="3D villa floor plan. Drag to orbit and scroll to zoom"></canvas><div class="loading" id="loading"><span></span>Setting the scene…</div><div class="error" id="error" hidden>Couldn't load the model. Refresh to try again.</div><div class="hint">DRAG TO ORBIT &nbsp;·&nbsp; SCROLL TO ZOOM</div><div class="controls views"><button class="chosen" id="axon" aria-label="Axonometric view" title="Axonometric view">◩</button><button id="plan" aria-label="Top-down view" title="Top-down view">▤</button><button id="reset" aria-label="Reset view" title="Reset view">↺</button></div><div class="controls zoom"><button id="plus" aria-label="Zoom in">＋</button><hr><button id="minus" aria-label="Zoom out">−</button></div></div>
-      <aside class="info"><div class="serial"><span>PROJECT / 001</span><span>FLOOR 00</span></div><p class="eyebrow small">THE EVERYDAY, IN PLAN</p><h2>A more open<br>way of seeing.</h2><p class="desc">A single-storey villa plan, brought into three dimensions. Look around, zoom in, and find your way from the salon to the cinema.</p><div class="places"><p class="eyebrow small">A FEW PLACES TO FIND</p><p><b class="dot salon"></b> Salon &amp; spa <i>01</i></p><p><b class="dot bedroom"></b> Bedrooms <i>02</i></p><p><b class="dot cinema"></b> Private cinema <i>03</i></p><p><b class="dot gym"></b> Gym &amp; kitchen <i>04</i></p></div><a class="download" href="/villa.glb" download="villa-plan.glb"><span>DOWNLOAD 3D MODEL</span><b>↓</b></a><div class="panel-foot"><span>01 / 01</span><span>OPEN-TOP STUDY · 2026</span></div></aside>
-      <div class="caption"><span>VILLA 01 <i>/</i> OPEN-TOP STUDY</span><span>DRAG THE MODEL TO EXPLORE</span></div></section>
-    <section class="specs"><p><i>A QUIET LOOK AT</i>HOME, IN PLAN</p><p><i>ONE FLOOR</i>ROOM TO WANDER</p><p><i>MADE TO EXPLORE</i>ROTATE · ZOOM · RESET</p><span>A SMALL WINDOW INTO A BIGGER IDEA &nbsp;↗</span></section>
-  </main><footer><span>AN EARLY VISUAL STUDY &nbsp;/&nbsp; DIMENSIONS ARE APPROXIMATE</span><span>QUÁLITY SIGN &nbsp;✳</span></footer>
-</div><script>setTimeout(()=>{const loading=document.querySelector('#loading');if(loading){loading.remove();const fallback=document.querySelector('#scene-fallback');if(fallback)fallback.hidden=false;const error=document.querySelector('#error');if(error){error.textContent='The viewer did not finish starting. Showing a rendered preview instead.';error.hidden=false;}}},25000);</script><script type="module" src="/src/main.js"></script></body></html>
+<body>
+  <div class="shell">
+    <header class="bar">
+      <a class="brand" href="#" aria-label="QUÁLITY SIGN home">
+        <img class="brand-logo" src="/quality-sign-logo.jpg" alt="QUÁLITY SIGN logo">
+        <span class="brand-copy"><strong>QUÁLITY SIGN</strong><small>INTERIOR &amp; EXTERIOR DESIGN</small></span>
+      </a>
+      <span class="edition"><b></b> CONCEPT MODEL <i>/</i> OCT 2026</span>
+      <span class="made">AMÉNAGEMENT &amp; DÉCOR ↗</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div><p class="eyebrow">— &nbsp; RESIDENTIAL / 001</p><h1>A home,<br><em>opened up.</em></h1></div>
+        <p class="hero-note">One floor. A little more room<br>to see how it all fits together.</p>
+      </section>
+
+      <section class="card" aria-label="Interactive villa floor plan">
+        <div class="stage" id="stage">
+          <div class="stamp"><b></b><span id="view-caption">AXONOMETRIC VIEW</span></div>
+          <div class="north">N<br><i>↑</i></div>
+          <img class="scene-fallback" id="scene-fallback" src="/cover.jpg" alt="Rendered 3D preview of the open-top villa floor plan" hidden>
+          <canvas id="scene" aria-label="3D villa floor plan. Drag to orbit or move, and scroll to zoom"></canvas>
+          <div class="room-labels" id="room-labels" aria-label="Room labels"></div>
+          <div class="loading" id="loading"><span></span>Setting the scene…</div>
+          <div class="error" id="error" hidden>Couldn't load the model. Refresh to try again.</div>
+          <div class="hint" id="nav-hint">DRAG TO ORBIT &nbsp;·&nbsp; RIGHT-DRAG TO MOVE &nbsp;·&nbsp; SCROLL TO ZOOM</div>
+
+          <div class="explore-toolbar" role="group" aria-label="Explore controls">
+            <button class="chosen" id="orbit-mode" type="button" aria-pressed="true">Orbit</button>
+            <button id="pan-mode" type="button" aria-pressed="false">Move</button>
+            <button class="chosen" id="labels-toggle" type="button" aria-pressed="true">Labels</button>
+          </div>
+          <div class="controls views" role="group" aria-label="Views">
+            <button class="chosen" id="axon" type="button" aria-label="Axonometric view" title="Axonometric view">◩</button>
+            <button id="plan" type="button" aria-label="Top-down view" title="Top-down view">▤</button>
+            <button id="reset" type="button" aria-label="Reset view" title="Reset view">↺</button>
+          </div>
+          <div class="controls zoom" role="group" aria-label="Zoom">
+            <button id="plus" type="button" aria-label="Zoom in">＋</button><hr>
+            <button id="minus" type="button" aria-label="Zoom out">−</button>
+          </div>
+        </div>
+
+        <aside class="info">
+          <div class="serial"><span>PROJECT / 001</span><span>FLOOR 00</span></div>
+          <p class="eyebrow small">THE EVERYDAY, IN PLAN</p>
+          <h2>Find your way<br>around.</h2>
+          <p class="desc">Choose a room to bring it into focus. Switch between 3D and plan view, then drag to explore.</p>
+          <div class="room-selected" id="room-selected" aria-live="polite">CHOOSE A ROOM TO EXPLORE</div>
+          <div class="rooms"><p class="eyebrow small">ROOMS / TAP TO FOCUS</p><div class="room-list" id="room-list"><span class="room-loading">Loading rooms…</span></div></div>
+          <a class="download" href="/villa.glb" download="villa-plan.glb"><span>DOWNLOAD 3D MODEL</span><b>↓</b></a>
+          <div class="panel-foot"><span>01 / 01</span><span>OPEN-TOP STUDY · 2026</span></div>
+        </aside>
+        <div class="caption"><span>VILLA 01 <i>/</i> OPEN-TOP STUDY</span><span>SELECT A ROOM TO EXPLORE</span></div>
+      </section>
+
+      <section class="specs"><p><i>A QUIET LOOK AT</i>HOME, IN PLAN</p><p><i>ONE FLOOR</i>ROOM TO WANDER</p><p><i>MADE TO EXPLORE</i>ROTATE · MOVE · ZOOM</p><span>A SMALL WINDOW INTO A BIGGER IDEA &nbsp;↗</span></section>
+    </main>
+    <footer><span>AN EARLY VISUAL STUDY &nbsp;/&nbsp; DIMENSIONS ARE APPROXIMATE</span><span>QUÁLITY SIGN &nbsp;✳</span></footer>
+  </div>
+
+  <script>setTimeout(()=>{const loading=document.querySelector('#loading');if(loading){loading.remove();const fallback=document.querySelector('#scene-fallback');if(fallback)fallback.hidden=false;const error=document.querySelector('#error');if(error){error.textContent='The viewer did not finish starting. Showing a rendered preview instead.';error.hidden=false;}}},25000);</script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

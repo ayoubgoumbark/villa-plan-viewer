@@ -14,3 +14,29 @@
 .info h2{color:#33045d}
 .download{color:#5a2c72}
 @media(max-width:640px){.bar{height:76px}.brand-logo{width:54px;height:54px}.brand-copy strong{font-size:12px}.brand-copy small{font-size:6px;letter-spacing:.03em}.made{display:none}}
+/* Room exploration */
+.room-labels{position:absolute;inset:0;z-index:1;pointer-events:none}
+.room-labels[hidden],.room-label[hidden]{display:none}
+.room-label{position:absolute;transform:translate(-50%,-50%);max-width:140px;padding:5px 9px;border:1px solid #d9c9df;border-radius:20px;background:#fffdf8ed;box-shadow:0 3px 12px #21142624;color:#442554;font:600 10px/1.2 'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;pointer-events:auto;transition:background .2s,color .2s,border-color .2s}
+.room-label:hover,.room-label.active{background:#33045d;border-color:#33045d;color:white}
+.explore-toolbar{position:absolute;top:17px;right:17px;z-index:3;display:flex;gap:2px;padding:3px;border:1px solid #d9d5d8;border-radius:8px;background:#f9f7f4ed;box-shadow:0 4px 15px #30243716;backdrop-filter:blur(8px)}
+.explore-toolbar button{min-height:30px;padding:0 10px;border:0;border-radius:5px;background:transparent;color:#6b616d;font:600 10px 'DM Sans',sans-serif;cursor:pointer}
+.explore-toolbar button:hover,.explore-toolbar button.chosen{background:#33045d;color:white}
+.explore-toolbar button:focus-visible,.room-label:focus-visible,.room-row:focus-visible{outline:2px solid #f06b35;outline-offset:2px}
+.views,.zoom{z-index:3}
+.hint{z-index:2;max-width:calc(100% - 135px)}
+.info>.eyebrow{margin-top:22px}
+.info h2{margin-top:9px;font-size:29px}
+.room-selected{margin-top:17px;padding:10px 11px;border-left:2px solid #f06b35;background:#f0e9f1;color:#4d2d5e;font:600 9px/1.4 var(--mono);letter-spacing:.045em}
+.rooms{display:flex;flex:1;flex-direction:column;min-height:0;margin-top:19px}
+.rooms>.eyebrow{margin-bottom:11px}
+.room-list{display:flex;flex:1;flex-direction:column;min-height:0;overflow-y:auto;scrollbar-color:#c9b8d1 transparent;scrollbar-width:thin}
+.room-loading{color:#99928f;font:9px var(--mono)}
+.room-row{display:flex;flex:none;align-items:center;gap:12px;min-height:32px;width:100%;padding:5px 7px;border:0;border-bottom:1px solid #e8e2e7;background:transparent;color:#514e50;text-align:left;font:11px 'DM Sans',sans-serif;cursor:pointer}
+.room-row:hover,.room-row.active{background:#eee4f0;color:#33045d}
+.room-number{min-width:17px;color:#b09aad;font:8px var(--mono)}
+.room-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.room-arrow{margin-left:auto;color:#b4a1bd;font-size:13px}
+.room-row.active .room-number,.room-row.active .room-arrow{color:#724285}
+.download{margin-top:16px}
+@media(max-width:640px){.explore-toolbar{top:10px;right:10px}.explore-toolbar button{min-height:27px;padding:0 7px;font-size:9px}.room-label{max-width:95px;padding:4px 6px;font-size:8px}.hint{max-width:calc(100% - 128px);line-height:1.5}.info>.eyebrow{margin-top:22px}.info h2{font-size:28px}.rooms{min-height:160px}.room-list{max-height:190px}}
