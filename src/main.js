@@ -2,6 +2,7 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { initLanguage, t } from './i18n.js';
 
 const canvas = document.querySelector('#scene');
 const stage = document.querySelector('#stage');
@@ -14,6 +15,7 @@ const selectedRoomText = document.querySelector('#room-selected');
 const navHint = document.querySelector('#nav-hint');
 const walkHud = document.querySelector('#walk-hud');
 const walkButton = document.querySelector('#walk-mode');
+initLanguage();
 
 const roomDefinitions = [
   { name: 'Salon', floor: 'Floor | Salon' },
@@ -31,13 +33,18 @@ const roomDefinitions = [
   { name: 'Garage', floor: 'Floor | Garage' },
 ];
 
-function showError(message) {
+let currentErrorKey = null;
+function showError(key) {
+  currentErrorKey = key;
   loading.remove();
   canvas.hidden = true;
   fallback.hidden = false;
-  error.textContent = message;
+  error.textContent = t(key);
   error.hidden = false;
 }
+window.addEventListener('villa-language-change', () => {
+  if (currentErrorKey) error.textContent = t(currentErrorKey);
+});
 
 function startViewer() {
   let renderer;
@@ -45,7 +52,7 @@ function startViewer() {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   } catch (err) {
     console.error('Could not create a WebGL renderer:', err);
-    showError('Interactive 3D is unavailable in this browser. Showing a rendered preview instead.');
+    showError('webglError');
     return;
   }
 
@@ -81,6 +88,11 @@ function startViewer() {
   controls.maxPolarAngle = Math.PI / 2.03;
   controls.minZoom = 0.5;
   controls.maxZoom = 4;
+  controls.enablePan = false;
+  controls.enableZoom = false;
+  controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+  controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
+  renderer.domElement.style.touchAction = 'pan-y';
   const initialTarget = new THREE.Vector3(12.92, 0, -7.67);
   controls.target.copy(initialTarget);
   camera.lookAt(controls.target);
@@ -92,7 +104,6 @@ function startViewer() {
   let highlightedMaterial = null;
   let cameraTween = null;
   let labelsVisible = true;
-  let navigationMode = 'orbit';
   let walking = false;
   let walkYaw = 0;
   let walkPitch = 0;
@@ -120,7 +131,7 @@ function startViewer() {
   scene.add(floorGrid);
 
   const modelTimeout = setTimeout(() => {
-    showError('The 3D model is taking too long to load. Showing a rendered preview instead.');
+    showError('timeoutError');
   }, 20000);
 
   new GLTFLoader().load(
@@ -143,7 +154,7 @@ function startViewer() {
     (err) => {
       clearTimeout(modelTimeout);
       console.error('Could not load /villa.glb:', err);
-      showError('The 3D model could not be loaded. Showing a rendered preview instead.');
+      showError('modelError');
     },
   );
 
@@ -184,8 +195,8 @@ function startViewer() {
       const label = document.createElement('button');
       label.type = 'button';
       label.className = 'room-label';
-      label.textContent = definition.name;
-      label.setAttribute('aria-label', `Focus on ${definition.name}`);
+      label.textContent = t('rooms')[index];
+      label.setAttribute('aria-label', `${t('focusRoom')} ${t('rooms')[index]}`);
       label.hidden = true;
       labelLayer.append(label);
 
@@ -198,7 +209,7 @@ function startViewer() {
       number.textContent = String(index + 1).padStart(2, '0');
       const name = document.createElement('span');
       name.className = 'room-name';
-      name.textContent = definition.name;
+      name.textContent = t('rooms')[index];
       const arrow = document.createElement('span');
       arrow.className = 'room-arrow';
       arrow.textContent = '↗';
@@ -210,7 +221,27 @@ function startViewer() {
       row.addEventListener('click', () => focusRoom(room));
       return [room];
     });
+    syncDynamicLanguage();
   }
+
+  function updateViewCaption() {
+    document.querySelector('#view-caption').textContent = t(walking ? 'viewWalk' : document.querySelector('#plan').classList.contains('chosen') ? 'viewPlan' : 'viewAxon');
+  }
+
+  function syncDynamicLanguage() {
+    for (const room of rooms) {
+      const name = t('rooms')[room.index];
+      room.label.textContent = name;
+      room.label.setAttribute('aria-label', `${t('focusRoom')} ${name}`);
+      room.row.querySelector('.room-name').textContent = name;
+    }
+    selectedRoomText.textContent = selectedRoom
+      ? `${t('roomWord')} ${String(selectedRoom.index + 1).padStart(2, '0')} / ${t('rooms')[selectedRoom.index]}`
+      : t('chooseRoom');
+    updateViewCaption();
+  }
+  window.addEventListener('villa-language-change', syncDynamicLanguage);
+  syncDynamicLanguage();
 
   function clearSelection() {
     if (highlightedMaterial) {
@@ -219,7 +250,7 @@ function startViewer() {
       highlightedMaterial = null;
     }
     selectedRoom = null;
-    selectedRoomText.textContent = 'CHOOSE A ROOM TO EXPLORE';
+    selectedRoomText.textContent = t('chooseRoom');
     for (const room of rooms) {
       room.label.classList.remove('active');
       room.row.classList.remove('active');
@@ -230,7 +261,7 @@ function startViewer() {
   function focusRoom(room) {
     clearSelection();
     selectedRoom = room;
-    selectedRoomText.textContent = `ROOM ${String(room.index + 1).padStart(2, '0')} / ${room.name.toUpperCase()}`;
+    selectedRoomText.textContent = `${t('roomWord')} ${String(room.index + 1).padStart(2, '0')} / ${t('rooms')[room.index]}`;
     room.label.classList.add('active');
     room.row.classList.add('active');
     room.row.setAttribute('aria-pressed', 'true');
@@ -294,26 +325,7 @@ function startViewer() {
     }
   }
 
-  function setNavigationMode(mode) {
-    if (walking) exitWalk();
-    navigationMode = mode;
-    controls.mouseButtons.LEFT = mode === 'orbit' ? THREE.MOUSE.ROTATE : THREE.MOUSE.PAN;
-    controls.mouseButtons.RIGHT = mode === 'orbit' ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
-    controls.touches.ONE = mode === 'orbit' ? THREE.TOUCH.ROTATE : THREE.TOUCH.PAN;
-    controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
-    for (const [id, active] of [['orbit-mode', mode === 'orbit'], ['pan-mode', mode === 'pan']]) {
-      const button = document.querySelector(`#${id}`);
-      button.classList.toggle('chosen', active);
-      button.setAttribute('aria-pressed', String(active));
-    }
-    navHint.textContent = mode === 'orbit'
-      ? 'DRAG TO ORBIT · RIGHT-DRAG TO MOVE · SCROLL OR PINCH TO ZOOM'
-      : 'DRAG TO MOVE · RIGHT-DRAG TO ORBIT · SCROLL OR PINCH TO ZOOM';
-  }
-
-  document.querySelector('#orbit-mode').onclick = () => setNavigationMode('orbit');
-  document.querySelector('#pan-mode').onclick = () => setNavigationMode('pan');
-  walkButton.onclick = enterWalk;
+  walkButton.onclick = () => walking ? exitWalk() : enterWalk();
   document.querySelector('#walk-exit').onclick = exitWalk;
   document.querySelector('#labels-toggle').onclick = (event) => {
     labelsVisible = !labelsVisible;
@@ -321,7 +333,6 @@ function startViewer() {
     event.currentTarget.classList.toggle('chosen', labelsVisible);
     event.currentTarget.setAttribute('aria-pressed', String(labelsVisible));
   };
-  setNavigationMode(navigationMode);
 
   function placeWalker(anchor) {
     walkCamera.position.set(anchor.x, eyeHeight, anchor.z);
@@ -335,15 +346,16 @@ function startViewer() {
     stage.classList.add('is-walking');
     activeCamera = walkCamera;
     controls.enabled = false;
+    renderer.domElement.style.touchAction = 'none';
     walkYaw = 0;
     walkPitch = 0;
-    placeWalker(selectedRoom?.anchor || rooms.find((room) => room.name === 'Hall').anchor);
+    placeWalker(selectedRoom?.anchor || rooms[6].anchor);
     walkHud.hidden = false;
     labelLayer.hidden = true;
     navHint.hidden = true;
     walkButton.classList.add('chosen');
     walkButton.setAttribute('aria-pressed', 'true');
-    document.querySelector('#view-caption').textContent = 'WALK-THROUGH VIEW';
+    updateViewCaption();
     walkClock.getDelta();
   }
 
@@ -353,16 +365,16 @@ function startViewer() {
     stage.classList.remove('is-walking');
     activeCamera = camera;
     controls.enabled = true;
+    renderer.domElement.style.touchAction = 'pan-y';
     heldKeys.clear();
     heldTouch.clear();
     touchLook = null;
-    if (document.pointerLockElement === canvas) document.exitPointerLock();
     walkHud.hidden = true;
     labelLayer.hidden = walking || !labelsVisible;
     navHint.hidden = false;
     walkButton.classList.remove('chosen');
     walkButton.setAttribute('aria-pressed', 'false');
-    document.querySelector('#view-caption').textContent = document.querySelector('#plan').classList.contains('chosen') ? 'PLAN VIEW' : 'AXONOMETRIC VIEW';
+    updateViewCaption();
   }
 
   function lookBy(dx, dy) {
@@ -371,14 +383,8 @@ function startViewer() {
     walkCamera.rotation.set(walkPitch, walkYaw, 0, 'YXZ');
   }
 
-  canvas.addEventListener('click', () => {
-    if (walking && matchMedia('(pointer: fine)').matches && !document.pointerLockElement) canvas.requestPointerLock?.();
-  });
-  document.addEventListener('mousemove', (event) => {
-    if (walking && document.pointerLockElement === canvas) lookBy(event.movementX, event.movementY);
-  });
   canvas.addEventListener('pointerdown', (event) => {
-    if (walking && document.pointerLockElement !== canvas) {
+    if (walking) {
       touchLook = { id: event.pointerId, x: event.clientX, y: event.clientY };
       canvas.setPointerCapture(event.pointerId);
     }
@@ -397,7 +403,7 @@ function startViewer() {
       heldKeys.add(event.code);
       event.preventDefault();
     }
-    if (event.code === 'Escape' && document.pointerLockElement !== canvas) exitWalk();
+    if (event.code === 'Escape') exitWalk();
   });
   document.addEventListener('keyup', (event) => heldKeys.delete(event.code));
   window.addEventListener('blur', () => { heldKeys.clear(); heldTouch.clear(); });
@@ -438,37 +444,40 @@ function startViewer() {
   const buttons = [...document.querySelectorAll('.views button')];
   const setActive = (button) => buttons.forEach((item) => item.classList.toggle('chosen', item === button));
   document.querySelector('#axon').onclick = (event) => {
+    if (walking) exitWalk();
     cameraTween = null;
+    controls.enableRotate = true;
     camera.up.set(0, 1, 0);
     camera.position.copy(originalPosition).add(controls.target.clone().sub(initialTarget));
     camera.lookAt(controls.target);
     controls.update();
-    setNavigationMode('orbit');
-    document.querySelector('#view-caption').textContent = 'AXONOMETRIC VIEW';
     setActive(event.currentTarget);
+    updateViewCaption();
   };
   document.querySelector('#plan').onclick = (event) => {
+    if (walking) exitWalk();
     cameraTween = null;
+    controls.enableRotate = false;
     const target = controls.target.clone();
     camera.up.set(0, 1, 0);
     camera.position.set(target.x, target.y + 68, target.z + 0.1);
     camera.lookAt(target);
     controls.update();
-    setNavigationMode('pan');
-    document.querySelector('#view-caption').textContent = 'PLAN VIEW';
     setActive(event.currentTarget);
+    updateViewCaption();
   };
   document.querySelector('#reset').onclick = () => {
+    if (walking) exitWalk();
     cameraTween = null;
     clearSelection();
+    controls.enableRotate = true;
     camera.up.set(0, 1, 0);
     controls.reset();
     camera.position.copy(originalPosition);
     camera.lookAt(controls.target);
     controls.update();
-    setNavigationMode('orbit');
-    document.querySelector('#view-caption').textContent = 'AXONOMETRIC VIEW';
     setActive(document.querySelector('#axon'));
+    updateViewCaption();
   };
   document.querySelector('#plus').onclick = () => {
     camera.zoom = Math.min(controls.maxZoom, camera.zoom * 1.2);
@@ -505,5 +514,5 @@ try {
   startViewer();
 } catch (err) {
   console.error('Could not start the villa viewer:', err);
-  showError('The interactive viewer could not start. Showing a rendered preview instead.');
+  showError('startupError');
 }

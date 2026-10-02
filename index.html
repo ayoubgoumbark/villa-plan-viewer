@@ -14,74 +14,73 @@
 <body>
   <div class="shell">
     <header class="bar">
-      <a class="brand" href="#" aria-label="QUÁLITY SIGN home">
-        <img class="brand-logo" src="/quality-sign-logo.jpg" alt="QUÁLITY SIGN logo">
-        <span class="brand-copy"><strong>QUÁLITY SIGN</strong><small>INTERIOR &amp; EXTERIOR DESIGN</small></span>
+      <a class="brand" href="#" aria-label="QUÁLITY SIGN home" data-i18n-aria="homeAria">
+        <img class="brand-logo" src="/quality-sign-logo.jpg" alt="QUÁLITY SIGN logo" data-i18n-alt="logoAlt">
+        <span class="brand-copy"><strong>QUÁLITY SIGN</strong><small data-i18n="brandSubtitle">INTERIOR &amp; EXTERIOR DESIGN</small></span>
       </a>
-      <span class="edition"><b></b> CONCEPT MODEL <i>/</i> OCT 2026</span>
-      <span class="made">AMÉNAGEMENT &amp; DÉCOR ↗</span>
+      <span class="edition"><b></b><span data-i18n="edition">CONCEPT MODEL / OCT 2026</span></span>
+      <span class="made" data-i18n="made">AMÉNAGEMENT &amp; DÉCOR ↗</span>
+      <div class="language-switch" role="group" aria-label="Language" data-i18n-aria="languageAria"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="fr" aria-pressed="false">FR</button><button type="button" data-lang="ar" aria-pressed="false">العربية</button></div>
     </header>
 
     <main>
       <section class="hero">
-        <div><p class="eyebrow">— &nbsp; RESIDENTIAL / 001</p><h1>A home,<br><em>opened up.</em></h1></div>
-        <p class="hero-note">One floor. A little more room<br>to see how it all fits together.</p>
+        <div><p class="eyebrow" data-i18n="heroEyebrow">— RESIDENTIAL / 001</p><h1><span data-i18n="heroLead">A home,</span><br><em data-i18n="heroEm">opened up.</em></h1></div>
+        <p class="hero-note"><span data-i18n="heroNote1">One floor. A little more room</span><br><span data-i18n="heroNote2">to see how it all fits together.</span></p>
       </section>
 
-      <section class="card" aria-label="Interactive villa floor plan">
+      <section class="card" aria-label="Interactive villa floor plan" data-i18n-aria="cardAria">
         <div class="stage" id="stage">
           <div class="stamp"><b></b><span id="view-caption">AXONOMETRIC VIEW</span></div>
-          <div class="north">N<br><i>↑</i></div>
-          <img class="scene-fallback" id="scene-fallback" src="/cover.jpg" alt="Rendered 3D preview of the open-top villa floor plan" hidden>
-          <canvas id="scene" aria-label="3D villa floor plan. Drag to orbit or move, and scroll to zoom"></canvas>
-          <div class="room-labels" id="room-labels" aria-label="Room labels"></div>
-          <div class="loading" id="loading"><span></span>Setting the scene…</div>
+          <div class="north"><span data-i18n="north">N</span><br><i>↑</i></div>
+          <img class="scene-fallback" id="scene-fallback" src="/cover.jpg" alt="Rendered 3D preview of the open-top villa floor plan" data-i18n-alt="fallbackAlt" hidden>
+          <canvas id="scene" aria-label="3D villa floor plan. Drag to orbit; use the zoom buttons to zoom" data-i18n-aria="canvasAria"></canvas>
+          <div class="room-labels" id="room-labels" aria-label="Room labels" data-i18n-aria="roomLabelsAria"></div>
+          <div class="loading" id="loading"><span></span><span data-i18n="loading">Setting the scene…</span></div>
           <div class="error" id="error" hidden>Couldn't load the model. Refresh to try again.</div>
-          <div class="hint" id="nav-hint">DRAG TO ORBIT &nbsp;·&nbsp; RIGHT-DRAG TO MOVE &nbsp;·&nbsp; SCROLL TO ZOOM</div>
+          <div class="hint" id="nav-hint" data-i18n="navHint">DRAG TO ORBIT · USE + / − TO ZOOM</div>
 
-          <div class="explore-toolbar" role="group" aria-label="Explore controls">
-            <button class="chosen" id="orbit-mode" type="button" aria-pressed="true">Orbit</button>
-            <button id="pan-mode" type="button" aria-pressed="false">Move</button>
-            <button id="walk-mode" type="button" aria-pressed="false">Walk inside</button>
-            <button class="chosen" id="labels-toggle" type="button" aria-pressed="true">Labels</button>
+          <div class="explore-toolbar" role="group" aria-label="Explore controls" data-i18n-aria="toolbarAria">
+            <button id="walk-mode" type="button" aria-pressed="false" data-i18n="walk">Walk inside</button>
+            <button class="chosen" id="labels-toggle" type="button" aria-pressed="true" data-i18n="labels">Labels</button>
           </div>
           <div class="walk-hud" id="walk-hud" hidden>
-            <div class="walk-message">W A S D TO WALK <span>·</span> DRAG OR MOVE MOUSE TO LOOK <span>·</span> SHIFT TO MOVE FASTER</div>
-            <button class="walk-exit" id="walk-exit" type="button">Exit walk</button>
-            <div class="walk-pad" aria-label="Touch walking controls">
-              <button type="button" data-walk="forward" aria-label="Walk forward">↑</button>
-              <button type="button" data-walk="left" aria-label="Walk left">←</button>
-              <button type="button" data-walk="backward" aria-label="Walk backward">↓</button>
-              <button type="button" data-walk="right" aria-label="Walk right">→</button>
+            <div class="walk-message" data-i18n="walkMessage">W A S D TO WALK · DRAG TO LOOK · EXIT WALK TO SCROLL THE PAGE</div>
+            <button class="walk-exit" id="walk-exit" type="button"><span aria-hidden="true">←</span> <span data-i18n="walkExit">Exit walk · Scroll page</span></button>
+            <div class="walk-pad" aria-label="Touch walking controls" data-i18n-aria="walkPadAria">
+              <button type="button" data-walk="forward" aria-label="Walk forward" data-i18n-aria="walkForward">↑</button>
+              <button type="button" data-walk="left" aria-label="Walk left" data-i18n-aria="walkLeft">←</button>
+              <button type="button" data-walk="backward" aria-label="Walk backward" data-i18n-aria="walkBackward">↓</button>
+              <button type="button" data-walk="right" aria-label="Walk right" data-i18n-aria="walkRight">→</button>
             </div>
           </div>
-          <div class="controls views" role="group" aria-label="Views">
-            <button class="chosen" id="axon" type="button" aria-label="Axonometric view" title="Axonometric view">◩</button>
-            <button id="plan" type="button" aria-label="Top-down view" title="Top-down view">▤</button>
-            <button id="reset" type="button" aria-label="Reset view" title="Reset view">↺</button>
+          <div class="controls views" role="group" aria-label="Views" data-i18n-aria="viewsAria">
+            <button class="chosen" id="axon" type="button" aria-label="Axonometric view" title="Axonometric view" data-i18n-aria="axonAria" data-i18n-title="axonAria">◩</button>
+            <button id="plan" type="button" aria-label="Top-down view" title="Top-down view" data-i18n-aria="planAria" data-i18n-title="planAria">▤</button>
+            <button id="reset" type="button" aria-label="Reset view" title="Reset view" data-i18n-aria="resetAria" data-i18n-title="resetAria">↺</button>
           </div>
-          <div class="controls zoom" role="group" aria-label="Zoom">
-            <button id="plus" type="button" aria-label="Zoom in">＋</button><hr>
-            <button id="minus" type="button" aria-label="Zoom out">−</button>
+          <div class="controls zoom" role="group" aria-label="Zoom" data-i18n-aria="zoomAria">
+            <button id="plus" type="button" aria-label="Zoom in" data-i18n-aria="zoomIn">＋</button><hr>
+            <button id="minus" type="button" aria-label="Zoom out" data-i18n-aria="zoomOut">−</button>
           </div>
         </div>
 
         <aside class="info">
-          <div class="serial"><span>PROJECT / 001</span><span>FLOOR 00</span></div>
-          <p class="eyebrow small">THE EVERYDAY, IN PLAN</p>
-          <h2>Find your way<br>around.</h2>
-          <p class="desc">Choose a room to bring it into focus. Use Walk inside for an eye-level tour of the building.</p>
+          <div class="serial"><span data-i18n="project">PROJECT / 001</span><span data-i18n="floor">FLOOR 00</span></div>
+          <p class="eyebrow small" data-i18n="infoEyebrow">THE EVERYDAY, IN PLAN</p>
+          <h2><span data-i18n="infoTitle1">Find your way</span><br><span data-i18n="infoTitle2">around.</span></h2>
+          <p class="desc" data-i18n="desc">Choose a room to bring it into focus. Use Walk inside for an eye-level tour of the building.</p>
           <div class="room-selected" id="room-selected" aria-live="polite">CHOOSE A ROOM TO EXPLORE</div>
-          <div class="rooms"><p class="eyebrow small">ROOMS / TAP TO FOCUS</p><div class="room-list" id="room-list"><span class="room-loading">Loading rooms…</span></div></div>
-          <a class="download" href="/villa.glb" download="villa-plan.glb"><span>DOWNLOAD 3D MODEL</span><b>↓</b></a>
-          <div class="panel-foot"><span>01 / 01</span><span>OPEN-TOP STUDY · 2026</span></div>
+          <div class="rooms"><p class="eyebrow small" data-i18n="roomsEyebrow">ROOMS / TAP TO FOCUS</p><div class="room-list" id="room-list"><span class="room-loading" data-i18n="loadingRooms">Loading rooms…</span></div></div>
+          <a class="download" href="/villa.glb" download="villa-plan.glb"><span data-i18n="download">DOWNLOAD 3D MODEL</span><b>↓</b></a>
+          <div class="panel-foot"><span>01 / 01</span><span data-i18n="study">OPEN-TOP STUDY · 2026</span></div>
         </aside>
-        <div class="caption"><span>VILLA 01 <i>/</i> OPEN-TOP STUDY</span><span>SELECT A ROOM TO EXPLORE</span></div>
+        <div class="caption"><span data-i18n="captionVilla">VILLA 01 / OPEN-TOP STUDY</span><span data-i18n="captionChoose">SELECT A ROOM TO EXPLORE</span></div>
       </section>
 
-      <section class="specs"><p><i>A QUIET LOOK AT</i>HOME, IN PLAN</p><p><i>ONE FLOOR</i>ROOM TO WANDER</p><p><i>MADE TO EXPLORE</i>ROTATE · MOVE · ZOOM</p><span>A SMALL WINDOW INTO A BIGGER IDEA &nbsp;↗</span></section>
+      <section class="specs"><p><i data-i18n="specsLead1">A QUIET LOOK AT</i><span data-i18n="specsText1">HOME, IN PLAN</span></p><p><i data-i18n="specsLead2">ONE FLOOR</i><span data-i18n="specsText2">ROOM TO WANDER</span></p><p><i data-i18n="specsLead3">MADE TO EXPLORE</i><span data-i18n="specsText3">ROTATE · WALK · ZOOM</span></p><span data-i18n="specsEnd">A SMALL WINDOW INTO A BIGGER IDEA ↗</span></section>
     </main>
-    <footer><span>AN EARLY VISUAL STUDY &nbsp;/&nbsp; DIMENSIONS ARE APPROXIMATE</span><span>QUÁLITY SIGN &nbsp;✳</span></footer>
+    <footer><span data-i18n="footer">AN EARLY VISUAL STUDY / DIMENSIONS ARE APPROXIMATE</span><span>QUÁLITY SIGN ✳</span></footer>
   </div>
 
   <script>setTimeout(()=>{const loading=document.querySelector('#loading');if(loading){loading.remove();const fallback=document.querySelector('#scene-fallback');if(fallback)fallback.hidden=false;const error=document.querySelector('#error');if(error){error.textContent='The viewer did not finish starting. Showing a rendered preview instead.';error.hidden=false;}}},25000);</script>

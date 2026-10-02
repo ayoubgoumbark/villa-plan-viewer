@@ -51,3 +51,21 @@
 .walk-pad{display:none}
 @media(max-width:760px){.walk-message{left:50%;bottom:9px;max-width:calc(100% - 25px);white-space:normal;font-size:7px;line-height:1.5}.walk-pad{position:absolute;bottom:46px;left:14px;display:grid;grid-template-columns:repeat(3,36px);grid-template-rows:repeat(2,36px);gap:3px;pointer-events:auto}.walk-pad button{border:1px solid #ffffff90;border-radius:7px;background:#33045dc9;color:white;font:20px sans-serif;touch-action:none}.walk-pad button:first-child{grid-column:2}.walk-pad button:nth-child(2){grid-column:1;grid-row:2}.walk-pad button:nth-child(3){grid-column:2;grid-row:2}.walk-pad button:nth-child(4){grid-column:3;grid-row:2}.walk-exit{top:79px;left:16px}.is-walking .north{display:none}}
 @media(max-width:640px){.stamp{top:52px}.north{top:82px}}
+
+/* Language selector and page scrolling */
+#scene{touch-action:pan-y}
+.is-walking #scene{touch-action:none}
+.is-walking .views,.is-walking .zoom{display:none}
+.language-switch{display:flex;gap:3px;padding:3px;border:1px solid #ddd2e1;border-radius:7px;background:#f9f7f4}
+.language-switch button{min-height:29px;padding:0 9px;border:0;border-radius:4px;background:transparent;color:#685c70;font:600 10px 'DM Sans',sans-serif;cursor:pointer}
+.language-switch button:hover,.language-switch button.chosen{background:#33045d;color:white}
+.language-switch button:focus-visible,.walk-exit:focus-visible{outline:2px solid #f06b35;outline-offset:2px}
+.walk-exit{z-index:5;box-shadow:0 5px 18px #21042840;border:2px solid #33045d;background:#33045d;color:white;font-size:12px;font-weight:700}
+.walk-exit:hover{background:#54226e;color:white}
+[lang=ar] body{font-family:Tahoma,Arial,sans-serif}
+[lang=ar] .hero h1 em{font-family:Tahoma,Arial,sans-serif;font-style:normal}
+[lang=ar] .room-selected{border-left:0;border-right:2px solid #f06b35}
+[lang=ar] .eyebrow,[lang=ar] .hint,[lang=ar] .walk-message,[lang=ar] .room-selected{letter-spacing:0}
+[lang=ar] .room-row{text-align:right}
+@media(max-width:850px){.edition,.made{display:none}}
+@media(max-width:640px){.language-switch button{min-height:27px;padding-inline:7px;font-size:9px}.walk-exit{top:78px;max-width:calc(100% - 30px);font-size:10px}.walk-message{bottom:8px}}
