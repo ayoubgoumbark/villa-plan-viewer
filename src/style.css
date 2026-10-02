@@ -71,4 +71,9 @@
 @media(max-width:640px){.language-switch button{min-height:27px;padding-inline:7px;font-size:9px}.walk-exit{top:78px;max-width:calc(100% - 30px);font-size:10px}.walk-message{bottom:8px}}
 .walk-message span{color:inherit;padding:0}
 .touch-walk-help{display:none}
-@media(pointer:coarse){.desktop-walk-help{display:none}.touch-walk-help{display:inline}}
+@media(max-width:760px),(pointer:coarse){.desktop-walk-help{display:none}.touch-walk-help{display:inline}}
+.stage.is-walking{position:fixed;inset:0;z-index:50;width:100vw;height:100vh;height:100dvh;border:0}
+.stage.is-walking .north{display:none}
+.stage.is-walking .explore-toolbar{display:none}
+.stage.is-walking .walk-exit{top:65px}
+@media(max-width:640px){.stage.is-walking .walk-exit{top:55px}}

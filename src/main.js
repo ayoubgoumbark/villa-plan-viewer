@@ -68,7 +68,7 @@ function startViewer() {
   const blenderFrameWidth = 37;
   const blenderAspect = 1700 / 1500;
   const camera = new THREE.OrthographicCamera(-blenderFrameWidth / 2, blenderFrameWidth / 2, blenderFrameWidth / 2, -blenderFrameWidth / 2, 0.1, 300);
-  const walkCamera = new THREE.PerspectiveCamera(72, 1, 0.08, 180);
+  const walkCamera = new THREE.PerspectiveCamera(66, 1, 0.08, 180);
   let activeCamera = camera;
   camera.up.set(0, 1, 0);
   camera.position.set(37, 67, 41);
@@ -116,6 +116,7 @@ function startViewer() {
   const eyeHeight = 1.65;
   const walkDirection = new THREE.Vector3();
   let touchLook = null;
+  let savedBodyOverflow = '';
   controls.addEventListener('start', () => { cameraTween = null; });
 
   const ground = new THREE.Mesh(
@@ -175,6 +176,7 @@ function startViewer() {
     camera.bottom = -frameHeight / 2;
     camera.updateProjectionMatrix();
     walkCamera.aspect = aspect;
+    walkCamera.fov = aspect < 0.8 ? 60 : 66;
     walkCamera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(stage);
@@ -346,13 +348,15 @@ function startViewer() {
     if (!rooms.length) return;
     cameraTween = null;
     walking = true;
+    savedBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     stage.classList.add('is-walking');
     activeCamera = walkCamera;
     controls.enabled = false;
     renderer.domElement.style.touchAction = 'none';
     walkYaw = -Math.PI / 2;
-    walkPitch = 0;
-    placeWalker(selectedRoom?.anchor || rooms[6].anchor);
+    walkPitch = -0.18;
+    placeWalker(rooms[6].anchor);
     walkHud.hidden = false;
     labelLayer.hidden = true;
     navHint.hidden = true;
@@ -366,6 +370,7 @@ function startViewer() {
     if (!walking) return;
     walking = false;
     stage.classList.remove('is-walking');
+    document.body.style.overflow = savedBodyOverflow;
     activeCamera = camera;
     controls.enabled = true;
     renderer.domElement.style.touchAction = 'pan-y';
