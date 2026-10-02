@@ -36,8 +36,9 @@ function startViewer() {
   scene.background = new THREE.Color('#f3f2ee');
   // Blender exports glTF with Y as the vertical axis. Use the saved Blender
   // camera, converted from Blender (x, y, z) to glTF (x, z, -y).
-  const orthoScale = 37;
-  const camera = new THREE.OrthographicCamera(-orthoScale / 2, orthoScale / 2, orthoScale / 2, -orthoScale / 2, 0.1, 300);
+  const blenderFrameWidth = 37;
+  const blenderAspect = 1700 / 1500;
+  const camera = new THREE.OrthographicCamera(-blenderFrameWidth / 2, blenderFrameWidth / 2, blenderFrameWidth / 2, -blenderFrameWidth / 2, 0.1, 300);
   camera.up.set(0, 1, 0);
   camera.position.set(37, 67, 41);
 
@@ -56,7 +57,7 @@ function startViewer() {
   controls.maxPolarAngle = Math.PI / 2.03;
   controls.minZoom = 0.5;
   controls.maxZoom = 4;
-  controls.target.set(13, 0, -8);
+  controls.target.set(12.92, 0, -7.67);
   camera.lookAt(controls.target);
   controls.update();
   controls.saveState();
@@ -104,10 +105,13 @@ function startViewer() {
     const height = stage.clientHeight;
     if (!width || !height) return;
     renderer.setSize(width, height, false);
-    camera.left = -orthoScale * width / height / 2;
-    camera.right = orthoScale * width / height / 2;
-    camera.top = orthoScale / 2;
-    camera.bottom = -orthoScale / 2;
+    const aspect = width / height;
+    const frameWidth = blenderFrameWidth * Math.max(1, aspect / blenderAspect);
+    const frameHeight = frameWidth / aspect;
+    camera.left = -frameWidth / 2;
+    camera.right = frameWidth / 2;
+    camera.top = frameHeight / 2;
+    camera.bottom = -frameHeight / 2;
     camera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(stage);
