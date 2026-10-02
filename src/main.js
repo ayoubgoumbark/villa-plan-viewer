@@ -369,6 +369,7 @@ function startViewer() {
     heldKeys.clear();
     heldTouch.clear();
     touchLook = null;
+    if (document.pointerLockElement === canvas) document.exitPointerLock();
     walkHud.hidden = true;
     labelLayer.hidden = walking || !labelsVisible;
     navHint.hidden = false;
@@ -383,8 +384,19 @@ function startViewer() {
     walkCamera.rotation.set(walkPitch, walkYaw, 0, 'YXZ');
   }
 
+  canvas.addEventListener('click', () => {
+    if (!walking || !matchMedia('(pointer: fine)').matches || document.pointerLockElement === canvas) return;
+    const lockRequest = canvas.requestPointerLock?.();
+    lockRequest?.catch?.(() => { /* Drag-to-look remains available. */ });
+  });
+  document.addEventListener('mousemove', (event) => {
+    if (walking && document.pointerLockElement === canvas) lookBy(event.movementX, event.movementY);
+  });
+  document.addEventListener('pointerlockchange', () => {
+    if (walking && document.pointerLockElement !== canvas) exitWalk();
+  });
   canvas.addEventListener('pointerdown', (event) => {
-    if (walking) {
+    if (walking && document.pointerLockElement !== canvas) {
       touchLook = { id: event.pointerId, x: event.clientX, y: event.clientY };
       canvas.setPointerCapture(event.pointerId);
     }

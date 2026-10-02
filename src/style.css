@@ -69,3 +69,6 @@
 [lang=ar] .room-row{text-align:right}
 @media(max-width:850px){.edition,.made{display:none}}
 @media(max-width:640px){.language-switch button{min-height:27px;padding-inline:7px;font-size:9px}.walk-exit{top:78px;max-width:calc(100% - 30px);font-size:10px}.walk-message{bottom:8px}}
+.walk-message span{color:inherit;padding:0}
+.touch-walk-help{display:none}
+@media(pointer:coarse){.desktop-walk-help{display:none}.touch-walk-help{display:inline}}
