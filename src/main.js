@@ -34,26 +34,31 @@ function startViewer() {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#f3f2ee');
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 300);
-  camera.up.set(0, 0, 1);
-  camera.position.set(37, -42, 65);
+  // Blender exports glTF with Y as the vertical axis. Use the saved Blender
+  // camera, converted from Blender (x, y, z) to glTF (x, z, -y).
+  const orthoScale = 37;
+  const camera = new THREE.OrthographicCamera(-orthoScale / 2, orthoScale / 2, orthoScale / 2, -orthoScale / 2, 0.1, 300);
+  camera.up.set(0, 1, 0);
+  camera.position.set(37, 67, 41);
 
   scene.add(new THREE.HemisphereLight('#fffaf1', '#929588', 2.3));
   const sun = new THREE.DirectionalLight('#fff4dd', 3.4);
-  sun.position.set(-24, -31, 55);
+  sun.position.set(-24, 55, 31);
   scene.add(sun);
   const fill = new THREE.DirectionalLight('#cad9d5', 1.2);
-  fill.position.set(38, 17, 29);
+  fill.position.set(38, 29, -17);
   scene.add(fill);
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.075;
-  controls.minPolarAngle = 0.12;
+  controls.minPolarAngle = 0;
   controls.maxPolarAngle = Math.PI / 2.03;
-  controls.minDistance = 16;
-  controls.maxDistance = 102;
-  controls.target.set(13, 7, 0.7);
+  controls.minZoom = 0.5;
+  controls.maxZoom = 4;
+  controls.target.set(13, 0, -8);
+  camera.lookAt(controls.target);
+  controls.update();
   controls.saveState();
   const originalPosition = camera.position.clone();
 
@@ -61,11 +66,11 @@ function startViewer() {
     new THREE.CircleGeometry(31, 96),
     new THREE.MeshStandardMaterial({ color: '#deddd6', roughness: 0.95 }),
   );
-  ground.position.set(13, 7, -0.42);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.set(13, -0.42, -7);
   scene.add(ground);
   const floorGrid = new THREE.GridHelper(64, 32, '#c5c5ba', '#dcdbd3');
-  floorGrid.rotation.x = Math.PI / 2;
-  floorGrid.position.set(13, 7, -0.3);
+  floorGrid.position.set(13, -0.3, -7);
   floorGrid.material.transparent = true;
   floorGrid.material.opacity = 0.25;
   scene.add(floorGrid);
@@ -82,13 +87,7 @@ function startViewer() {
       fallback.hidden = true;
       error.hidden = true;
       scene.add(modelScene);
-      const box = new THREE.Box3().setFromObject(modelScene);
-      if (!box.isEmpty()) {
-        const center = box.getCenter(new THREE.Vector3());
-        controls.target.set(center.x, center.y, center.z + 0.6);
-        controls.update();
-        controls.saveState();
-      }
+      controls.update();
       loading.classList.add('done');
       setTimeout(() => loading.remove(), 500);
     },
@@ -105,7 +104,10 @@ function startViewer() {
     const height = stage.clientHeight;
     if (!width || !height) return;
     renderer.setSize(width, height, false);
-    camera.aspect = width / height;
+    camera.left = -orthoScale * width / height / 2;
+    camera.right = orthoScale * width / height / 2;
+    camera.top = orthoScale / 2;
+    camera.bottom = -orthoScale / 2;
     camera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(stage);
@@ -115,7 +117,7 @@ function startViewer() {
   const setActive = (button) => buttons.forEach((item) => item.classList.toggle('chosen', item === button));
   document.querySelector('#axon').onclick = (event) => {
     controls.reset();
-    camera.up.set(0, 0, 1);
+    camera.up.set(0, 1, 0);
     camera.position.copy(originalPosition);
     camera.lookAt(controls.target);
     controls.update();
@@ -125,14 +127,14 @@ function startViewer() {
   document.querySelector('#plan').onclick = (event) => {
     const target = controls.target.clone();
     camera.up.set(0, 1, 0);
-    camera.position.set(target.x, target.y - 0.1, target.z + 68);
+    camera.position.set(target.x, target.y + 68, target.z + 0.1);
     camera.lookAt(target);
     controls.update();
     document.querySelector('#view-caption').textContent = 'PLAN VIEW';
     setActive(event.currentTarget);
   };
   document.querySelector('#reset').onclick = () => {
-    camera.up.set(0, 0, 1);
+    camera.up.set(0, 1, 0);
     controls.reset();
     camera.position.copy(originalPosition);
     camera.lookAt(controls.target);
@@ -140,8 +142,16 @@ function startViewer() {
     document.querySelector('#view-caption').textContent = 'AXONOMETRIC VIEW';
     setActive(document.querySelector('#axon'));
   };
-  document.querySelector('#plus').onclick = () => camera.position.lerp(controls.target, 0.14);
-  document.querySelector('#minus').onclick = () => camera.position.lerp(controls.target, -0.17);
+  document.querySelector('#plus').onclick = () => {
+    camera.zoom = Math.min(controls.maxZoom, camera.zoom * 1.2);
+    camera.updateProjectionMatrix();
+    controls.update();
+  };
+  document.querySelector('#minus').onclick = () => {
+    camera.zoom = Math.max(controls.minZoom, camera.zoom / 1.2);
+    camera.updateProjectionMatrix();
+    controls.update();
+  };
 
   function animate() {
     requestAnimationFrame(animate);
