@@ -137,7 +137,7 @@ function startViewer() {
   }, 45000);
 
   new GLTFLoader().load(
-    '/villa.glb',
+    '/villa.glb?v=19',
     ({ scene: modelScene }) => {
       clearTimeout(modelTimeout);
       canvas.hidden = false;

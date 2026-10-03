@@ -1,6 +1,6 @@
 ﻿# Villa 01 — 3D floor plan
 
-Interactive, open-top visualization of the supplied single-floor villa plan. Orbit with a mouse or touch, zoom, reset the opening view, switch to plan view, or walk inside. The browser-ready glTF model lives in `public/villa.glb`. The current model and preview come from `Villa_Open_Top_Bedroom_Access_Revision_v17.blend`.
+Interactive, open-top visualization of the supplied single-floor villa plan. Orbit with a mouse or touch, zoom, reset the opening view, switch to plan view, or walk inside. The browser-ready glTF model lives in `public/villa.glb`. The current model and preview come from the `Villa_Open_Top_Current.blend` source in the main amenagement project (cinema decor revision v19).
 
 ## Local development
 
