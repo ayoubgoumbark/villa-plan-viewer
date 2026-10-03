@@ -134,7 +134,7 @@ function startViewer() {
 
   const modelTimeout = setTimeout(() => {
     showError('timeoutError');
-  }, 20000);
+  }, 45000);
 
   new GLTFLoader().load(
     '/villa.glb',
@@ -147,7 +147,7 @@ function startViewer() {
       modelScene.traverse((object) => {
         const sourceName = object.userData.name || object.name;
         if (sourceName) modelNodesBySourceName.set(sourceName, object);
-        if (object.isMesh && !sourceName.startsWith('Floor |') && sourceName !== 'Continuous villa foundation') collisionMeshes.push(object);
+        if (object.isMesh && object.userData.walk_collidable === true) collisionMeshes.push(object);
       });
       createRoomNavigation(modelScene);
       controls.update();
